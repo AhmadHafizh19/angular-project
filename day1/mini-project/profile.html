@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apis's Profile</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#recent">Posts</a></li>
+                <li><a href="#works">Works</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#video">Video</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header>
+        <div class="header-content">
+            <h1>Hi, I'm Ahmad Hafizh Assa'ad,<br>Cloud & Data Enthusiast</h1>
+            <p>
+                A highly motivated and results-driven Informatics Engineering graduate from ITS with a strong foundation
+                in Cloud Computing, Data Engineering, and Information Technology.
+            </p>
+
+            <ul class="hobbies">
+                <li>Gaming</li>
+                <li>Badminton</li>
+                <li>Traveling</li>
+            </ul>
+
+            <button class="btn">Download Resume</button>
+        </div>
+        <img src="assets/hafizh.png" alt="Ahmad Hafizh Assa'ad" class="profile-img" />
+    </header>
+
+    <div class="container">
+
+        <section class="recent-posts" id="recent">
+            <h2>Recent Posts</h2>
+            <div class="post-list">
+                <div class="post-card">
+                    <h3>Making a design system from scratch</h3>
+                    <p><small>12 Feb 2020 &nbsp; | &nbsp; Design, Pattern</small></p>
+                    <p>Artikel tentang membangun sistem desain dari awal agar scalable dan konsisten.</p>
+                </div>
+                <div class="post-card">
+                    <h3>Creating pixel perfect icons in Figma</h3>
+                    <p><small>12 Feb 2020 &nbsp; | &nbsp; Figma, Icon Design</small></p>
+                    <p>Cara membuat ikon presisi tinggi menggunakan fitur auto-layout & grid di Figma.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="featured" id="works">
+            <h2>Featured Works</h2>
+            <div class="work-item">
+                <img src="./assets/cloud-infra.jpg" alt="Project 1" class="work-image">
+                <div class="work-content">
+                    <h3>Cloud Infrastructure Design</h3>
+                    <p>Designed scalable and cost-effective cloud architecture for an academic project using GCP.</p>
+                </div>
+            </div>
+            <div class="work-item">
+                <img src="./assets/data-pipeline.png" alt="Project 2" class="work-image">
+                <div class="work-content">
+                    <h3>Data Pipeline for Analytics</h3>
+                    <p>Built an end-to-end data ingestion and transformation pipeline using Apache Beam and BigQuery.
+                    </p>
+                </div>
+            </div>
+            <div class="work-item">
+                <img src="./assets/it-support.jpg" alt="Project 2" class="work-image">
+                <div class="work-content">
+                    <h3>IT Support System</h3>
+                    <p>Developed internal IT helpdesk solution using Laravel and MySQL for departmental use.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact" id="contact">
+            <h2>Contact Me</h2>
+            <form action="#">
+                <label for="name">Name:</label><br>
+                <input type="text" id="name" placeholder="Enter your name"><br><br>
+
+                <label for="email">Email:</label><br>
+                <input type="email" id="email" placeholder="Enter your email"><br><br>
+
+                <label for="phone">Phone Number:</label><br>
+                <input type="tel" id="phone" placeholder="Enter your phone number"><br><br>
+
+                <label for="message">Message:</label><br>
+                <textarea id="message" rows="4" cols="50" placeholder="Type your message here"></textarea><br><br>
+
+                <button type="submit" class="btn">Send</button>
+            </form>
+        </section>
+
+        <section class="video" id="video">
+            <h2>My Favorite Video</h2>
+            <iframe width="100%" height="500" src="https://www.youtube.com/embed/VK62PAhzdDk?si=Qgw8SMcr0lb2MN-4"
+                title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+        </section>
+    </div>
+
+    <footer>
+        <a href="https://www.instagram.com/ahmd_hafizh/" target="_blank">
+            <img class="social-icon" src="./assets/instagram.png" alt="Instagram"></a>
+        <a href="https://www.linkedin.com/in/ahmadhafizh19/" target="_blank">
+            <img class="social-icon" src="./assets/linkedin.png" alt="LinkedIn">
+        </a>
+        <p>© 2025 Ahmad Hafizh Assa'ad.</p>
+    </footer>
+
+</body>
+
+</html>
