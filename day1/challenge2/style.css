@@ -53,6 +53,7 @@ h1 {
 .info h2 {
     margin: 0;
     font-size: 20px;
+    padding-bottom: 10px;
 }
 
 .progress-bar {
@@ -68,8 +69,9 @@ h1 {
     text-align: right;
     padding-right: 5px;
     color: white;
-    font-size: 0.9em;
+    font-size: 14px;
     line-height: 20px;
+    border-radius: 10px;
 }
 
 .red {
