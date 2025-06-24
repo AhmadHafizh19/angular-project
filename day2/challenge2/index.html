@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Data Pengajuan Leasing</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Daftar Pengajuan Leasing</h2>
+
+    <table id="tabelPengajuan">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Umur</th>
+                <th>DP</th>
+                <th>Harga Motor</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>Daftar Pengajuan (Umur 21-55)</h2>
+
+    <table id="tabelPengajuanByUmur">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Umur</th>
+                <th>DP</th>
+                <th>Harga Motor</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>Daftar Cicilan Bulanan (Disetujui)</h2>
+
+    <table id="tabelPengajuanCicilanBulanan">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Harga Motor</th>
+                <th>DP (30%)</th>
+                <th>Bunga</th>
+                <th>Cicilan Bulanan</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        async function tampilkanSemuaData() {
+            const res = await fetch("https://68598a7a138a18086dfec989.mockapi.io/dummy-fif/DummyDataUser");
+            const data = await res.json();
+
+            const tbodyAll = document.querySelector("#tabelPengajuan tbody");
+            tbodyAll.innerHTML = "";
+
+            data.forEach((pengajuan, index) => {
+                tbodyAll.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${pengajuan.name}</td>
+                    <td>${pengajuan.age}</td>
+                    <td>Rp ${parseInt(pengajuan.dp).toLocaleString()}</td>
+                    <td>Rp ${parseInt(pengajuan.price).toLocaleString()}</td>
+                </tr>
+            `;
+            });
+
+            return data;
+        }
+
+        async function tampilkanDataByUmur() {
+            const data = await tampilkanSemuaData();
+
+            const filtered = data.filter(p => p.age >= 21 && p.age <= 55);
+
+            const tbodyFiltered = document.querySelector("#tabelPengajuanByUmur tbody");
+            tbodyFiltered.innerHTML = "";
+
+            filtered.forEach((pengajuan, index) => {
+                tbodyFiltered.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${pengajuan.name}</td>
+                    <td>${pengajuan.age}</td>
+                    <td>Rp ${parseInt(pengajuan.dp).toLocaleString()}</td>
+                    <td>Rp ${parseInt(pengajuan.price).toLocaleString()}</td>
+                </tr>
+            `;
+            });
+
+            return filtered;
+        }
+
+        async function tampilkanCicilanBulanan() {
+            const filtered = await tampilkanDataByUmur();
+
+            const tbodyCicilan = document.querySelector("#tabelPengajuanCicilanBulanan tbody");
+            tbodyCicilan.innerHTML = "";
+
+            filtered.forEach((pengajuan, index) => {
+                const hargaMotor = parseInt(pengajuan.price);
+                const dp = hargaMotor * 0.3;
+                const pokokPinjaman = hargaMotor - dp;
+                const bunga = 0.10;
+                const tenor = 12;
+                const jumlahBunga = pokokPinjaman * bunga;
+                const totalDenganBunga = pokokPinjaman + jumlahBunga;
+                const cicilanBulanan = totalDenganBunga / tenor;
+
+                tbodyCicilan.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${pengajuan.name}</td>
+                    <td>Rp ${hargaMotor.toLocaleString()}</td>
+                    <td>Rp ${Math.round(dp).toLocaleString()}</td>
+                    <td>Rp ${Math.round(jumlahBunga).toLocaleString()}</td>
+                    <td>Rp ${Math.round(cicilanBulanan).toLocaleString()}</td>
+                </tr>
+                `;
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            await tampilkanCicilanBulanan(); // Menjalankan semua fungsi secara berurutan
+        });
+    </script>
+
+</body>
+
+</html>
