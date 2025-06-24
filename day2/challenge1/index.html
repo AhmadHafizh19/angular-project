@@ -7,74 +7,100 @@
     <link rel="stylesheet" href="style.css">">
 </head>
 
-<div class="container">
-    <h2>Simulasi Cicilan Motor</h2>
+<body>
+    <div class="container">
+        <h2>Simulasi Cicilan Motor</h2>
 
-    <label>Harga Motor (Rp):</label>
-    <input type="number" id="hargaMotor" />
+        <label>Pemasukan (Rp):</label>
+        <input type="number" id="pemasukan" />
 
-    <label>Uang Muka (DP) (Rp):</label>
-    <input type="number" id="dp" />
+        <label>Harga Motor (Rp):</label>
+        <input type="number" id="hargaMotor" />
 
-    <label>Tenor (bulan):</label>
-    <select id="tenor">
-        <option value="12">12 bulan</option>
-        <option value="24">24 bulan</option>
-        <option value="36">36 bulan</option>
-        <option value="48">48 bulan</option>
-    </select>
+        <label>Uang Muka (DP) (Rp):</label>
+        <input type="number" id="dp" />
 
-    <label>Bunga per Tahun (%):</label>
-    <input type="number" id="bunga" placeholder="Contoh: 8" />
+        <label>Tenor (bulan):</label>
+        <select id="tenor">
+            <option value="12">12 Bulan (Bunga 5%)</option>
+            <option value="24">24 Bulan (Bunga 8%)</option>
+            <option value="36">36 Bulan (Bunga 10%)</option>
+            <option value="48">48 Bulan (Bunga 12%)</option>
+        </select>
 
-    <button onclick="hitungCicilan()">Hitung Cicilan</button>
+        <!-- bunga dibuat otomatis sesuai dengan tenor -->
+        <!-- <label>Bunga per Tahun (%):</label>
+    <input type="number" id="bunga" placeholder="Contoh: 8" /> -->
 
-    <div id="hasil"></div>
-</div>
-<script>
-    function hitungCicilan() {
-        const harga = parseFloat(document.getElementById("hargaMotor").value);
-        const dp = parseFloat(document.getElementById("dp").value);
-        const tenor = parseInt(document.getElementById("tenor").value);
-        const bungaInput = parseFloat(document.getElementById("bunga").value);
-        const hasilDiv = document.getElementById("hasil");
+        <button onclick="hitungCicilan()">Hitung Cicilan</button>
 
-        // Validasi input
-        if (isNaN(harga) || isNaN(dp) || isNaN(bungaInput)) {
-            hasilDiv.innerHTML = "<span style='color:red;'>Harga, DP, dan Bunga harus diisi dengan angka.</span>";
-            return;
-        }
+        <div id="hasil"></div>
+    </div>
+    <script>
+        function hitungCicilan() {
+            const pemasukan = parseFloat(document.getElementById("pemasukan").value);
+            const harga = parseFloat(document.getElementById("hargaMotor").value);
+            const dp = parseFloat(document.getElementById("dp").value);
+            const tenor = parseInt(document.getElementById("tenor").value);
+            // const bungaInput = parseFloat(document.getElementById("bunga").value);
+            const hasilDiv = document.getElementById("hasil");
 
-        if (dp > harga) {
-            hasilDiv.innerHTML = "<span style='color:red;'>DP tidak boleh lebih besar dari harga motor.</span>";
-            return;
-        }
+            // Validasi input
+            if (pemasukan <= 3000000) {
+                hasilDiv.innerHTML = "<span style='color:red;'>Pemasukan harus di atas Rp 3.000.000.</span>";
+                return;
+            }
+            if (isNaN(pemasukan) || isNaN(harga) || isNaN(dp)) {
+                hasilDiv.innerHTML = "<span style='color:red;'>Pemasukan, Harga, DP, dan Bunga harus diisi dengan angka.</span>";
+                return;
+            }
 
-        // buat kondisi ketika dp kurang dari 30%
-        if (dp < harga * 0.3) {
-            hasilDiv.innerHTML = "<span style='color:red;'>DP harus minimal 30% dari harga motor.</span>";
-            return;
-        }
+            if (dp > harga) {
+                hasilDiv.innerHTML = "<span style='color:red;'>DP tidak boleh lebih besar dari harga motor.</span>";
+                return;
+            }
 
-        // buat perhitungan bunga
-        const bunga = (bungaInput / 100) / 12; // Bunga per bulan,
+            // buat kondisi ketika dp kurang dari 30%
+            if (dp < harga * 0.3) {
+                hasilDiv.innerHTML = "<span style='color:red;'>DP harus minimal 30% dari harga motor.</span>";
+                return;
+            }
 
+            // Bunga per tahun berdasarkan tenor
+            let bungaPerTahun; // Inisialisasi bungaPerTahun
+            switch (tenor) {
+                case 12:
+                    bungaPerTahun = 5;
+                    break;
+                case 24:
+                    bungaPerTahun = 8;
+                    break;
+                case 36:
+                    bungaPerTahun = 10;
+                    break;
+                case 48:
+                    bungaPerTahun = 12;
+                    break;
+            }
 
-        // Perhitungan
-        const pinjaman = harga - dp; // Pinjaman setelah DP
-        const totalPembayaran = pinjaman * (1 + bunga * tenor); // Total pembayaran
-        const cicilanBulanan = totalPembayaran / tenor; // Cicilan per bulan
+            // buat perhitungan bunga
+            const bunga = (bungaPerTahun / 100) / 12; // Bunga per bulan,
 
-        // Tampilkan hasil
-        hasilDiv.innerHTML = `
+            // Perhitungan
+            const pinjaman = harga - dp; // Pinjaman setelah DP
+            const totalPembayaran = pinjaman * (1 + bunga * tenor); // Total pembayaran
+            const cicilanBulanan = totalPembayaran / tenor; // Cicilan per bulan
+
+            // Tampilkan hasil
+            hasilDiv.innerHTML = `
         <p>Harga Motor: Rp ${harga.toLocaleString()}</p>
         <p>DP: Rp ${dp.toLocaleString()}</p>
         <p>Pinjaman: Rp ${pinjaman.toLocaleString()}</p>
-        <p>Bunga: ${bungaInput}%</p>
+        <p>Bunga: ${bungaPerTahun}%</p>
         <p>Total Pembayaran: Rp ${totalPembayaran.toLocaleString()}</p>
         <p><strong>Cicilan per bulan: Rp ${cicilanBulanan.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong></p>`;
-    }
-</script>
+        }
+    </script>
 </body>
 
 </html>
