@@ -1,0 +1,28 @@
+<div class="table-container">
+    <h2>Data Table</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Umur</th>
+                <th>Pekerjaan</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let kreditur of childrenData; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ kreditur.name }}</td>
+                <td>{{ kreditur.age }}</td>
+                <td>{{ kreditur.job }}</td>
+                <td>
+                    <button (click)="deleteKreditur(kreditur)" class="btn-delete">Delete</button>
+                </td>
+            </tr>
+            <tr *ngIf="!hasData">
+                <td colspan="5" class="no-data">No data available</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
