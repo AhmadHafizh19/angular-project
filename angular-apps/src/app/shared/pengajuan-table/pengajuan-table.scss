@@ -49,63 +49,34 @@
     border-bottom: 1px solid #f3f4f6;
 }
 
-.data-table tr:last-child td {
+.data-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-.data-table tr:hover td {
-    background: #f8fafc;
-    transition: background-color 0.2s ease;
+.data-table tbody tr:hover {
+    background: #f9fafb;
 }
 
 .btn-delete {
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    color: #ffffff;
+    color: white;
     border: none;
     padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
+    border-radius: 6px;
     font-size: 13px;
     font-weight: 500;
+    cursor: pointer;
     transition: all 0.2s ease;
-    letter-spacing: 0.01em;
 }
 
 .btn-delete:hover {
-    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
-}
-
-.btn-delete:active {
-    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .no-data {
     text-align: center;
     color: #9ca3af;
     font-style: italic;
-    padding: 40px 20px;
-    font-size: 15px;
-    background: #fafbfc;
-    border-radius: 12px;
-    margin: 20px 0;
-}
-
-.score-good {
-    color: #10b981;
-    font-weight: 600;
-    background: #d1fae5;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 13px;
-}
-
-.score-bad {
-    color: #ef4444;
-    font-weight: 600;
-    background: #fee2e2;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 13px;
+    padding: 32px;
 }

@@ -1,5 +1,5 @@
 <div class="table-container">
-    <h2>Data Table</h2>
+    <h2>Daftar Kreditur</h2>
     <table class="data-table">
         <thead>
             <tr>
@@ -7,21 +7,27 @@
                 <th>Nama</th>
                 <th>Umur</th>
                 <th>Pekerjaan</th>
+                <th>Kredit Skor</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let kreditur of childrenData; let i = index">
+            <tr *ngFor="let creditur of childrenData; let i = index">
                 <td>{{ i + 1 }}</td>
-                <td>{{ kreditur.name }}</td>
-                <td>{{ kreditur.age }}</td>
-                <td>{{ kreditur.job }}</td>
+                <td>{{ creditur.name }}</td>
+                <td>{{ creditur.age }}</td>
+                <td>{{ creditur.job }}</td>
                 <td>
-                    <button (click)="deleteKreditur(kreditur)" class="btn-delete">Delete</button>
+                    <span [class]="creditur.creditScore >= 60 ? 'score-good' : 'score-bad'">
+                        {{ creditur.creditScore }}
+                    </span>
+                </td>
+                <td>
+                    <button (click)="deleteCreditur(creditur)" class="btn-delete">Delete</button>
                 </td>
             </tr>
             <tr *ngIf="!hasData">
-                <td colspan="5" class="no-data">No data available</td>
+                <td colspan="6" class="no-data">Belum ada data kreditur</td>
             </tr>
         </tbody>
     </table>

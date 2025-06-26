@@ -1,36 +1,38 @@
 <div class="form-container">
-    <h2>Add New Person</h2>
-    <form [formGroup]="krediturForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-            <label for="name">Nama:</label>
-            <input type="text" id="name" formControlName="name" placeholder="Masukkan nama" class="form-control" />
-            <div *ngIf="isFieldInvalid('name')" class="error-message">
-                <div *ngIf="krediturForm.get('name')?.errors?.['required']">Nama harus diisi</div>
-                <div *ngIf="krediturForm.get('name')?.errors?.['minlength']">Nama minimal 3 karakter</div>
+    <h2>Tambah Kreditur</h2>
+    <form [formGroup]="crediturForm" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="name">Nama:</label>
+                <input type="text" id="name" formControlName="name" placeholder="Masukkan nama" class="form-control" />
+                <div *ngIf="isFieldInvalid('name')" class="error-message">
+                    <div *ngIf="crediturForm.get('name')?.errors?.['required']">Nama harus diisi</div>
+                    <div *ngIf="crediturForm.get('name')?.errors?.['minlength']">Nama minimal 3 karakter</div>
+                </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label for="age">Umur:</label>
-            <input type="number" id="age" formControlName="age" placeholder="Masukkan umur" class="form-control" />
-            <div *ngIf="isFieldInvalid('age')" class="error-message">
-                <div *ngIf="krediturForm.get('age')?.errors?.['required']">Umur harus diisi</div>
-                <div *ngIf="krediturForm.get('age')?.errors?.['min'] || krediturForm.get('age')?.errors?.['max']">
-                    Umur harus antara 1-120 tahun
+            <div class="form-group">
+                <label for="age">Umur:</label>
+                <input type="number" id="age" formControlName="age" placeholder="Masukkan umur" class="form-control" />
+                <div *ngIf="isFieldInvalid('age')" class="error-message">
+                    <div *ngIf="crediturForm.get('age')?.errors?.['required']">Umur harus diisi</div>
+                    <div *ngIf="crediturForm.get('age')?.errors?.['min'] || crediturForm.get('age')?.errors?.['max']">
+                        Umur harus antara 1-120 tahun
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="job">Pekerjaan:</label>
+                <input type="text" id="job" formControlName="job" placeholder="Masukkan pekerjaan" class="form-control" />
+                <div *ngIf="isFieldInvalid('job')" class="error-message">
+                    <div *ngIf="crediturForm.get('job')?.errors?.['required']">Pekerjaan harus diisi</div>
+                    <div *ngIf="crediturForm.get('job')?.errors?.['minlength']">Pekerjaan minimal 3 karakter</div>
                 </div>
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="job">Pekerjaan:</label>
-            <input type="text" id="job" formControlName="job" placeholder="Masukkan pekerjaan" class="form-control" />
-            <div *ngIf="isFieldInvalid('job')" class="error-message">
-                <div *ngIf="krediturForm.get('job')?.errors?.['required']">Pekerjaan harus diisi</div>
-                <div *ngIf="krediturForm.get('job')?.errors?.['minlength']">Pekerjaan minimal 3 karakter</div>
-            </div>
-        </div>
-
-        <button type="submit" [disabled]="krediturForm.invalid" class="btn-add">
+        <button type="submit" [disabled]="crediturForm.invalid" class="btn-add">
             Add
         </button>
     </form>
