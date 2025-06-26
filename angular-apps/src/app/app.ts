@@ -65,7 +65,7 @@ export class App implements OnInit {
   onAddCreditur(newCreditur: Omit<creditur, 'id' | 'creditScore'>): void {
     const crediturData = {
       ...newCreditur,
-      creditScore: Math.floor(Math.random() * 850) + 300 // Generate random credit score between 300-850
+      creditScore: Math.floor(Math.random() * 100) + 1 // Generate random credit score between 300-850
     };
 
     this.apiService.addData(crediturData).subscribe({
