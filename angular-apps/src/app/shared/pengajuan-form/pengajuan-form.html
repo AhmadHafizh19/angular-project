@@ -1,0 +1,55 @@
+<div class="form-container">
+    <h2>Form Pengajuan Pinjaman</h2>
+    <form (ngSubmit)="onSubmit()" #pengajuanForm="ngForm">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="nama">Nama Peminjam:</label>
+                <select 
+                    id="nama" 
+                    name="nama" 
+                    [(ngModel)]="selectedNama" 
+                    required
+                    class="form-control">
+                    <option value="">-- Pilih Nama --</option>
+                    <option *ngFor="let creditur of crediturList" [value]="creditur.name">
+                        {{ creditur.name }} (Skor: {{ creditur.creditScore }})
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="jumlahPinjaman">Jumlah Pinjaman (Rp):</label>
+                <input 
+                    type="number" 
+                    id="jumlahPinjaman" 
+                    name="jumlahPinjaman" 
+                    [(ngModel)]="jumlahPinjaman" 
+                    required
+                    min="1"
+                    class="form-control"
+                    placeholder="Masukkan jumlah pinjaman">
+            </div>
+
+            <div class="form-group">
+                <label for="tenor">Tenor (Bulan):</label>
+                <select 
+                    id="tenor" 
+                    name="tenor" 
+                    [(ngModel)]="selectedTenor" 
+                    required
+                    class="form-control">
+                    <option *ngFor="let tenor of tenorOptions" [value]="tenor">
+                        {{ tenor }} Bulan
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <button 
+            type="submit" 
+            [disabled]="!pengajuanForm.form.valid"
+            class="btn-submit">
+            Ajukan Pinjaman
+        </button>
+    </form>
+</div>

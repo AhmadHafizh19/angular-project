@@ -1,12 +1,35 @@
 <div class="app-container">
-  <h1>Database Management</h1>
-  
-  <!-- Child Component 1: Form for adding new entries -->
-  <app-form (addKreditur)="onAddKreditur($event)"></app-form>
-  
-  <!-- Child Component 2: Table for displaying data -->
-  <app-table 
-    [childrenData]="krediturData" 
-    (deleteKrediturEvent)="onDeleteKreditur($event)">
+  <h1>Database Management System</h1>
+
+    <!-- Alert Message untuk Creditur -->
+  <div *ngIf="showCrediturAlert" [class]="'alert creditur-alert ' + (crediturAlertMessage.includes('Gagal') || crediturAlertMessage.includes('gagal') ? 'alert-error' : 'alert-success')">
+    <strong>Creditur:</strong> {{ crediturAlertMessage }}
+  </div>
+
+  <!-- Form untuk menambahkan kreditur baru -->
+  <app-form (addCreditur)="onAddCreditur($event)"></app-form>
+
+  <!-- Table untuk menampilkan data kreditur -->
+  <app-table
+    [childrenData]="crediturData"
+    (deleteCrediturEvent)="onDeleteCreditur($event)">
   </app-table>
+
+    <!-- Alert Message untuk Pengajuan -->
+  <div *ngIf="showPengajuanAlert" [class]="'alert pengajuan-alert ' + (pengajuanAlertMessage.includes('kurang') || pengajuanAlertMessage.includes('Gagal') || pengajuanAlertMessage.includes('gagal') ? 'alert-error' : 'alert-success')">
+    <strong>Pengajuan:</strong> {{ pengajuanAlertMessage }}
+  </div>
+
+  <!-- Form untuk pengajuan pinjaman -->
+  <app-pengajuan-form
+    [crediturList]="crediturData"
+    (submitPengajuan)="onSubmitPengajuan($event)">
+  </app-pengajuan-form>
+
+
+  <!-- Table untuk menampilkan data pengajuan pinjaman -->
+  <app-pengajuan-table
+    [pengajuanData]="pengajuanData"
+    (deletePengajuan)="onDeletePengajuan($event)">
+  </app-pengajuan-table>
 </div>
