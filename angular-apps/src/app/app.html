@@ -10,7 +10,7 @@
   </div>
 
   <!-- Simple Navigation Bar -->
-  <nav class="navbar">
+  <nav class="navbar" *ngIf="showNavbar">
     <div class="navbar-container">
       <div class="navbar-brand">
         <span class="brand-text">PinjamanKu</span>
@@ -29,12 +29,15 @@
         <a routerLink="/list-pengajuan" routerLinkActive="active" class="nav-link">
           Daftar Pengajuan
         </a>
+        <button class="logout-btn" (click)="onLogout()">
+          Logout
+        </button>
       </div>
     </div>
   </nav>
 
   <!-- Main Content -->
-  <main class="main-content">
+  <main class="main-content" [class.no-navbar]="!showNavbar">
     <router-outlet></router-outlet>
   </main>
 </div>

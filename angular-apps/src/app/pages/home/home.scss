@@ -2,6 +2,25 @@
   padding: 20px 0;
 }
 
+.home-header {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+
+  h1 {
+    color: #1f2937;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
 .page-header {
   margin-bottom: 30px;
   padding: 20px;
@@ -42,6 +61,11 @@
 @media (max-width: 768px) {
   .home-container {
     padding: 16px 0;
+  }
+
+  .home-header {
+    padding: 16px;
+    margin-bottom: 20px;
   }
 
   .page-header {

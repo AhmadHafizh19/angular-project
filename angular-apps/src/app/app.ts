@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { PengajuanPinjamanService } from './services/pengajuan-pinjaman/pengajuan-pinjaman';
 import { ApiService } from './services/api/api';
 import { DataSharingService } from './services/data-sharing/data-sharing';
+import { AuthService } from './services/auth/auth';
+import { filter } from 'rxjs/operators';
 
 
 @Component({
@@ -19,6 +21,7 @@ import { DataSharingService } from './services/data-sharing/data-sharing';
 
 export class App implements OnInit {
   protected readonly title = 'angular-apps';
+  showNavbar: boolean = true;
 
   // Alert for Creditur operations
   crediturAlertMessage: string = '';
@@ -33,11 +36,23 @@ export class App implements OnInit {
     private pengajuanService: PengajuanPinjamanService,
     private apiService: ApiService,
     private dataSharingService: DataSharingService,
+    private authService: AuthService,
+    private router: Router,
     private cdRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.checkNavbarVisibility();
+    this.updateBodyClass();
     this.loadInitialData();
+
+    // Listen to route changes to update navbar visibility
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.checkNavbarVisibility();
+      this.updateBodyClass();
+    });
 
     // Subscribe to alerts
     this.dataSharingService.crediturAlert$.subscribe(alert => {
@@ -52,6 +67,28 @@ export class App implements OnInit {
       this.pengajuanAlertIsSuccess = alert.isSuccess;
       this.cdRef.detectChanges();
     });
+  }
+
+  private checkNavbarVisibility(): void {
+    const currentUrl = this.router.url;
+    // Hide navbar on login and 404 pages
+    this.showNavbar = !currentUrl.includes('/login') && !currentUrl.includes('/404');
+  }
+
+  private updateBodyClass(): void {
+    const currentUrl = this.router.url;
+    const shouldHideScroll = currentUrl.includes('/login') || currentUrl.includes('/404');
+
+    if (shouldHideScroll) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+  }
+
+  onLogout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   private loadInitialData(): void {
