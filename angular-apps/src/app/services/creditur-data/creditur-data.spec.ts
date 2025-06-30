@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { CrediturData } from './creditur-data';
+import { CrediturDataService } from './creditur-data';
 
-describe('CrediturData', () => {
-  let service: CrediturData;
+describe('CrediturDataService', () => {
+  let service: CrediturDataService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(CrediturData);
+    service = TestBed.inject(CrediturDataService);
   });
 
   it('should be created', () => {
