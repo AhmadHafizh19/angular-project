@@ -7,6 +7,7 @@
                 <th>Nama</th>
                 <th>Jumlah Pengajuan</th>
                 <th>Tenor</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -17,11 +18,17 @@
                 <td>{{ pengajuan.jumlahPinjaman | currency: 'IDR':'symbol':'1.0-0'}}</td>
                 <td>{{ pengajuan.tenor }} Bulan</td>
                 <td>
-                    <button (click)="deletePengajuanItem(pengajuan)" class="btn-delete">Delete</button>
+                    <span [class]="pengajuan.disetujui ? 'status-approved' : 'status-rejected'">
+                        {{ pengajuan.disetujui ? '✓ Disetujui' : '✗ Ditolak' }}
+                    </span>
+                </td>
+                <td class="action-buttons">
+                    <button (click)="viewDetail(pengajuan)" class="btn-detail-modern">Detail</button>
+                    <button (click)="deletePengajuanItem(pengajuan)" class="btn-delete-modern">Delete</button>
                 </td>
             </tr>
             <tr *ngIf="!hasData">
-                <td colspan="5" class="no-data">Belum ada pengajuan pinjaman</td>
+                <td colspan="6" class="no-data">Belum ada pengajuan pinjaman</td>
             </tr>
         </tbody>
     </table>

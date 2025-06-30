@@ -21,23 +21,34 @@ export class PengajuanPinjamanService {
     // Find creditur by name
     const creditur = crediturList.find(c => c.name === nama);
 
-    if (!creditur) {
-      return { success: false, message: 'Creditur tidak ditemukan' };
-    }
+    let isApproved = false;
+    let reason = '';
 
-    if (creditur.creditScore < 60) {
-      return { success: false, message: 'Skor kredit kurang' };
+    if (!creditur) {
+      isApproved = false;
+      reason = 'Creditur tidak ditemukan dalam database';
+    } else {
+      isApproved = creditur.creditScore >= 60;
+      reason = isApproved ? 'Pengajuan disetujui berdasarkan skor kredit' : 'Skor kredit tidak memenuhi syarat minimum (60)';
     }
 
     const newPengajuan: PengajuanPinjaman = {
       id: this.nextId++,
       nama: nama,
       jumlahPinjaman: jumlahPinjaman,
-      tenor: tenor
+      tenor: tenor,
+      disetujui: isApproved,
+      alasan: reason,
+      tanggalPengajuan: new Date()
     };
 
     this.pengajuanData.push(newPengajuan);
-    return { success: true, message: 'Pengajuan berhasil ditambahkan' };
+
+    if (isApproved) {
+      return { success: true, message: 'Pengajuan berhasil ditambahkan dan disetujui' };
+    } else {
+      return { success: false, message: `Pengajuan ditambahkan tetapi ditolak: ${reason}` };
+    }
   }
 
   deletePengajuan(pengajuanToDelete: PengajuanPinjaman): PengajuanPinjaman[] {

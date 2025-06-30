@@ -22,8 +22,9 @@
                         {{ creditur.creditScore }}
                     </span>
                 </td>
-                <td>
-                    <button (click)="deleteCreditur(creditur)" class="btn-delete">Delete</button>
+                <td class="action-buttons">
+                    <button (click)="viewDetail(creditur)" class="btn-detail-modern">Detail</button>
+                    <button (click)="deleteCreditur(creditur)" class="btn-delete-modern">Delete</button>
                 </td>
             </tr>
             <tr *ngIf="!hasData">

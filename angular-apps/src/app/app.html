@@ -1,35 +1,40 @@
 <div class="app-container">
-  <h1>Database Management System</h1>
-
-    <!-- Alert Message untuk Creditur -->
-  <div *ngIf="showCrediturAlert" [class]="'alert creditur-alert ' + (crediturAlertMessage.includes('Gagal') || crediturAlertMessage.includes('gagal') ? 'alert-error' : 'alert-success')">
-    <strong>Creditur:</strong> {{ crediturAlertMessage }}
+  <!-- Alert Messages -->
+  <div *ngIf="showCrediturAlert" class="alert creditur-alert alert-success">
+    {{ crediturAlertMessage }}
   </div>
 
-  <!-- Form untuk menambahkan kreditur baru -->
-  <app-form (addCreditur)="onAddCreditur($event)"></app-form>
-
-  <!-- Table untuk menampilkan data kreditur -->
-  <app-table
-    [childrenData]="crediturData"
-    (deleteCrediturEvent)="onDeleteCreditur($event)">
-  </app-table>
-
-    <!-- Alert Message untuk Pengajuan -->
-  <div *ngIf="showPengajuanAlert" [class]="'alert pengajuan-alert ' + (pengajuanAlertMessage.includes('kurang') || pengajuanAlertMessage.includes('Gagal') || pengajuanAlertMessage.includes('gagal') ? 'alert-error' : 'alert-success')">
-    <strong>Pengajuan:</strong> {{ pengajuanAlertMessage }}
+  <div *ngIf="showPengajuanAlert"
+       [class]="'alert pengajuan-alert ' + (pengajuanAlertIsSuccess ? 'alert-success' : 'alert-error')">
+    {{ pengajuanAlertMessage }}
   </div>
 
-  <!-- Form untuk pengajuan pinjaman -->
-  <app-pengajuan-form
-    [crediturList]="crediturData"
-    (submitPengajuan)="onSubmitPengajuan($event)">
-  </app-pengajuan-form>
+  <!-- Simple Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <span class="brand-text">PinjamanKu</span>
+      </div>
 
+      <div class="navbar-nav">
+        <a routerLink="/home" routerLinkActive="active" class="nav-link">
+          Beranda
+        </a>
+        <a routerLink="/form-creditur" routerLinkActive="active" class="nav-link">
+          Tambah Kreditur
+        </a>
+        <a routerLink="/form-pengajuan" routerLinkActive="active" class="nav-link">
+          Buat Pengajuan
+        </a>
+        <a routerLink="/list-pengajuan" routerLinkActive="active" class="nav-link">
+          Daftar Pengajuan
+        </a>
+      </div>
+    </div>
+  </nav>
 
-  <!-- Table untuk menampilkan data pengajuan pinjaman -->
-  <app-pengajuan-table
-    [pengajuanData]="pengajuanData"
-    (deletePengajuan)="onDeletePengajuan($event)">
-  </app-pengajuan-table>
+  <!-- Main Content -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
 </div>

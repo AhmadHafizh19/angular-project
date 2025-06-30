@@ -1,0 +1,63 @@
+<div class="detail-pengajuan-container">
+  <div class="header">
+    <button class="btn-back" (click)="goBack()">Kembali</button>
+  </div>
+
+  <div *ngIf="pengajuan" class="pengajuan-detail">
+    <div class="detail-card">
+      <div class="detail-item">
+        <label>ID Pengajuan:</label>
+        <span class="value">{{ pengajuan.id }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Nama Pemohon:</label>
+        <span class="value">{{ pengajuan.nama }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Jumlah Pinjaman:</label>
+        <span class="value amount">{{ formatCurrency(pengajuan.jumlahPinjaman) }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Tenor:</label>
+        <span class="value">{{ pengajuan.tenor }} bulan</span>
+      </div>
+      <div class="detail-item">
+        <label>Status:</label>
+        <span [class]="'value status ' + (pengajuan.disetujui ? 'status-approved' : 'status-rejected')">
+          {{ pengajuan.disetujui ? '✓ Disetujui' : '✗ Ditolak' }}
+        </span>
+      </div>
+      <div class="detail-item" *ngIf="pengajuan.alasan">
+        <label>Alasan:</label>
+        <span class="value reason">{{ pengajuan.alasan }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Tanggal Pengajuan:</label>
+        <span class="value">{{ pengajuan.tanggalPengajuan | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="pengajuan.disetujui" class="loan-calculation">
+      <h3>Rincian Pinjaman</h3>
+      <div class="calculation-card">
+        <div class="calc-item">
+          <label>Jumlah Pokok:</label>
+          <span class="value">{{ formatCurrency(pengajuan.jumlahPinjaman) }}</span>
+        </div>
+        <div class="calc-item">
+          <label>Cicilan per Bulan:</label>
+          <span class="value">{{ formatCurrency(pengajuan.jumlahPinjaman / pengajuan.tenor) }}</span>
+        </div>
+        <div class="calc-item">
+          <label>Total Tenor:</label>
+          <span class="value">{{ pengajuan.tenor }} bulan</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!pengajuan" class="not-found">
+    <h3>Pengajuan tidak ditemukan</h3>
+    <p>Data pengajuan dengan ID {{ pengajuanId }} tidak ditemukan.</p>
+  </div>
+</div>

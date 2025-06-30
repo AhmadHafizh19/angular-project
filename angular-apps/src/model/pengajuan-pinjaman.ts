@@ -3,4 +3,7 @@ export interface PengajuanPinjaman {
     nama: string;
     jumlahPinjaman: number;
     tenor: number;
+    disetujui?: boolean;
+    alasan?: string;
+    tanggalPengajuan?: Date;
 }

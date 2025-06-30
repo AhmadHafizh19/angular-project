@@ -1,0 +1,46 @@
+<div class="detail-creditur-container">
+  <div class="header">
+    <h2>Detail Kreditur</h2>
+    <button class="btn-back" (click)="goBack()">Kembali</button>
+  </div>
+
+  <div *ngIf="creditur" class="creditur-detail">
+    <div class="detail-card">
+      <div class="detail-item">
+        <label>ID:</label>
+        <span class="value">{{ creditur.id }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Nama:</label>
+        <span class="value">{{ creditur.name }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Umur:</label>
+        <span class="value">{{ creditur.age }} tahun</span>
+      </div>
+      <div class="detail-item">
+        <label>Pekerjaan:</label>
+        <span class="value">{{ creditur.job }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Kredit Skor:</label>
+        <span [class]="'value score ' + (creditur.creditScore >= 60 ? 'score-good' : 'score-bad')">
+          {{ creditur.creditScore }}
+        </span>
+      </div>
+      <div class="detail-item" *ngIf="creditur.creditScore >= 60">
+        <label>Status:</label>
+        <span class="value status-eligible">✓ Layak untuk pinjaman</span>
+      </div>
+      <div class="detail-item" *ngIf="creditur.creditScore < 60">
+        <label>Status:</label>
+        <span class="value status-not-eligible">✗ Tidak layak untuk pinjaman</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!creditur" class="not-found">
+    <h3>Kreditur tidak ditemukan</h3>
+    <p>Data kreditur dengan ID {{ crediturId }} tidak ditemukan.</p>
+  </div>
+</div>

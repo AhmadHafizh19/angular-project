@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { PengajuanPinjaman } from '../../../model/pengajuan-pinjaman';
 
 @Component({
@@ -13,6 +14,8 @@ export class PengajuanTable {
   @Input() pengajuanData: PengajuanPinjaman[] = [];
   @Output() deletePengajuan = new EventEmitter<PengajuanPinjaman>();
 
+  constructor(private router: Router) {}
+
   get hasData(): boolean {
     return this.pengajuanData.length > 0;
   }
@@ -21,4 +24,7 @@ export class PengajuanTable {
     this.deletePengajuan.emit(pengajuan);
   }
 
+  viewDetail(pengajuan: PengajuanPinjaman): void {
+    this.router.navigate(['/detail-pengajuan', pengajuan.id]);
+  }
 }
