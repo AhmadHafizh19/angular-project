@@ -1,22 +1,23 @@
+import 'zone.js';
+import 'zone.js/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-
 import { ListPengajuan } from './list-pengajuan';
 import { DataSharingService } from '../../services/data-sharing/data-sharing';
 import { PengajuanPinjamanService } from '../../services/pengajuan-pinjaman/pengajuan-pinjaman';
 import { PengajuanPinjaman } from '../../../model/pengajuan-pinjaman';
 
-describe('ListPengajuan', () => {
+describe('ListPengajuanComponent', () => {
   let component: ListPengajuan;
   let fixture: ComponentFixture<ListPengajuan>;
-  let dataSharingService: jasmine.SpyObj<DataSharingService>;
-  let pengajuanService: jasmine.SpyObj<PengajuanPinjamanService>;
+  let mockDataSharingService: jasmine.SpyObj<DataSharingService>;
+  let mockPengajuanService: jasmine.SpyObj<PengajuanPinjamanService>;
 
   const mockPengajuanData: PengajuanPinjaman[] = [
     {
       id: 1,
       nama: 'John Doe',
-      jumlahPinjaman: 5000000,
+      jumlahPinjaman: 10000000,
       tenor: 12,
       disetujui: true,
       tanggalPengajuan: new Date('2024-01-01')
@@ -24,18 +25,22 @@ describe('ListPengajuan', () => {
     {
       id: 2,
       nama: 'Jane Smith',
-      jumlahPinjaman: 10000000,
-      tenor: 24,
+      jumlahPinjaman: 5000000,
+      tenor: 6,
       disetujui: false,
+      alasan: 'Credit score rendah',
       tanggalPengajuan: new Date('2024-01-02')
     }
   ];
 
   beforeEach(async () => {
-    const dataSharingServiceSpy = jasmine.createSpyObj('DataSharingService',
-      ['refreshPengajuanData', 'showPengajuanAlert'],
-      { pengajuanData$: of(mockPengajuanData) }
-    );
+    const dataSharingServiceSpy = jasmine.createSpyObj('DataSharingService', [
+      'refreshPengajuanData',
+      'showPengajuanAlert'
+    ], {
+      pengajuanData$: of(mockPengajuanData)
+    });
+
     const pengajuanServiceSpy = jasmine.createSpyObj('PengajuanPinjamanService', ['deletePengajuan']);
 
     await TestBed.configureTestingModule({
@@ -44,75 +49,55 @@ describe('ListPengajuan', () => {
         { provide: DataSharingService, useValue: dataSharingServiceSpy },
         { provide: PengajuanPinjamanService, useValue: pengajuanServiceSpy }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ListPengajuan);
     component = fixture.componentInstance;
-    dataSharingService = TestBed.inject(DataSharingService) as jasmine.SpyObj<DataSharingService>;
-    pengajuanService = TestBed.inject(PengajuanPinjamanService) as jasmine.SpyObj<PengajuanPinjamanService>;
-    fixture.detectChanges();
+    mockDataSharingService = TestBed.inject(DataSharingService) as jasmine.SpyObj<DataSharingService>;
+    mockPengajuanService = TestBed.inject(PengajuanPinjamanService) as jasmine.SpyObj<PengajuanPinjamanService>;
   });
 
-  it('should create', () => {
+  it('should create the list pengajuan component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize with empty pengajuan data', () => {
-    expect(component.pengajuanData).toEqual([]);
-  });
-
-  it('should subscribe to pengajuan data on init', () => {
+  it('should initialize pengajuan data from service on init', () => {
     component.ngOnInit();
     expect(component.pengajuanData).toEqual(mockPengajuanData);
   });
 
-  it('should delete pengajuan when user confirms', () => {
-    const pengajuanToDelete = mockPengajuanData[0];
-    spyOn(window, 'confirm').and.returnValue(true);
+  describe('Delete Pengajuan Functionality', () => {
+    it('should delete pengajuan when confirmed', () => {
+      const pengajuanToDelete = mockPengajuanData[0];
+      spyOn(window, 'confirm').and.returnValue(true);
 
-    component.onDeletePengajuan(pengajuanToDelete);
+      component.onDeletePengajuan(pengajuanToDelete);
 
-    expect(pengajuanService.deletePengajuan).toHaveBeenCalledWith(pengajuanToDelete);
-    expect(dataSharingService.refreshPengajuanData).toHaveBeenCalledWith(pengajuanService);
-    expect(dataSharingService.showPengajuanAlert).toHaveBeenCalledWith('Pengajuan berhasil dihapus');
-  });
+      expect(window.confirm).toHaveBeenCalledWith(`Apakah Anda yakin ingin menghapus pengajuan dari ${pengajuanToDelete.nama}?`);
+      expect(mockPengajuanService.deletePengajuan).toHaveBeenCalledWith(pengajuanToDelete);
+      expect(mockDataSharingService.refreshPengajuanData).toHaveBeenCalledWith(mockPengajuanService);
+      expect(mockDataSharingService.showPengajuanAlert).toHaveBeenCalledWith('Pengajuan berhasil dihapus');
+    });
 
-  it('should not delete pengajuan when user cancels', () => {
-    const pengajuanToDelete = mockPengajuanData[0];
-    spyOn(window, 'confirm').and.returnValue(false);
+    it('should not delete pengajuan when not confirmed', () => {
+      const pengajuanToDelete = mockPengajuanData[0];
+      spyOn(window, 'confirm').and.returnValue(false);
 
-    component.onDeletePengajuan(pengajuanToDelete);
+      component.onDeletePengajuan(pengajuanToDelete);
 
-    expect(pengajuanService.deletePengajuan).not.toHaveBeenCalled();
-    expect(dataSharingService.refreshPengajuanData).not.toHaveBeenCalled();
-    expect(dataSharingService.showPengajuanAlert).not.toHaveBeenCalled();
-  });
+      expect(window.confirm).toHaveBeenCalled();
+      expect(mockPengajuanService.deletePengajuan).not.toHaveBeenCalled();
+      expect(mockDataSharingService.refreshPengajuanData).not.toHaveBeenCalled();
+      expect(mockDataSharingService.showPengajuanAlert).not.toHaveBeenCalled();
+    });
 
-  it('should show correct confirmation message', () => {
-    const pengajuanToDelete = mockPengajuanData[1];
-    spyOn(window, 'confirm').and.returnValue(true);
+    it('should show correct confirmation message with pengajuan nama', () => {
+      const pengajuanToDelete = mockPengajuanData[1];
+      spyOn(window, 'confirm').and.returnValue(true);
 
-    component.onDeletePengajuan(pengajuanToDelete);
+      component.onDeletePengajuan(pengajuanToDelete);
 
-    expect(window.confirm).toHaveBeenCalledWith('Apakah Anda yakin ingin menghapus pengajuan dari Jane Smith?');
-  });
-
-  it('should handle different pengajuan objects', () => {
-    const customPengajuan: PengajuanPinjaman = {
-      id: 3,
-      nama: 'Bob Wilson',
-      jumlahPinjaman: 7500000,
-      tenor: 18,
-      disetujui: false,
-      tanggalPengajuan: new Date('2024-01-03')
-    };
-
-    spyOn(window, 'confirm').and.returnValue(true);
-
-    component.onDeletePengajuan(customPengajuan);
-
-    expect(pengajuanService.deletePengajuan).toHaveBeenCalledWith(customPengajuan);
-    expect(window.confirm).toHaveBeenCalledWith('Apakah Anda yakin ingin menghapus pengajuan dari Bob Wilson?');
+      expect(window.confirm).toHaveBeenCalledWith(`Apakah Anda yakin ingin menghapus pengajuan dari ${pengajuanToDelete.nama}?`);
+    });
   });
 });

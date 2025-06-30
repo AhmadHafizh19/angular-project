@@ -35,12 +35,14 @@ export class DataSharingService {
     return this.pengajuanDataSubject.value;
   }
 
-  getCrediturById(id: number): creditur | undefined {
-    return this.crediturDataSubject.value.find(c => c.id === id);
+  getCrediturById(id: string | number): creditur | undefined {
+    const numId = typeof id === 'string' ? parseInt(id, 10) : id;
+    return this.crediturDataSubject.value.find(c => c.id === numId);
   }
 
-  getPengajuanById(id: number): PengajuanPinjaman | undefined {
-    return this.pengajuanDataSubject.value.find(p => p.id === id);
+  getPengajuanById(id: string | number): PengajuanPinjaman | undefined {
+    const numId = typeof id === 'string' ? parseInt(id, 10) : id;
+    return this.pengajuanDataSubject.value.find(p => p.id === numId);
   }
 
   showCrediturAlert(message: string): void {

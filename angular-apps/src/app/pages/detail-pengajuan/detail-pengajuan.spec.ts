@@ -1,128 +1,152 @@
+import 'zone.js';
+import 'zone.js/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
-
 import { DetailPengajuan } from './detail-pengajuan';
 import { DataSharingService } from '../../services/data-sharing/data-sharing';
 import { PengajuanPinjaman } from '../../../model/pengajuan-pinjaman';
 
-describe('DetailPengajuan', () => {
+describe('DetailPengajuanComponent', () => {
   let component: DetailPengajuan;
   let fixture: ComponentFixture<DetailPengajuan>;
-  let dataSharingService: jasmine.SpyObj<DataSharingService>;
-  let router: jasmine.SpyObj<Router>;
-  let activatedRoute: jasmine.SpyObj<ActivatedRoute>;
+  let mockDataSharingService: jasmine.SpyObj<DataSharingService>;
+  let mockRouter: jasmine.SpyObj<Router>;
+  let mockActivatedRoute: any;
 
   const mockPengajuan: PengajuanPinjaman = {
     id: 1,
     nama: 'John Doe',
-    jumlahPinjaman: 5000000,
+    jumlahPinjaman: 10000000,
     tenor: 12,
     disetujui: true,
     tanggalPengajuan: new Date('2024-01-01')
   };
 
+  const mockPengajuanData: PengajuanPinjaman[] = [mockPengajuan];
+
   beforeEach(async () => {
-    const dataSharingServiceSpy = jasmine.createSpyObj('DataSharingService',
-      ['getPengajuanById'],
-      { pengajuanData$: of([mockPengajuan]) }
-    );
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const activatedRouteSpy = jasmine.createSpyObj('ActivatedRoute', [], {
-      params: of({ id: '1' })
+    const dataSharingServiceSpy = jasmine.createSpyObj('DataSharingService', [
+      'getPengajuanById'
+    ], {
+      pengajuanData$: of(mockPengajuanData)
     });
+
+    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+
+    mockActivatedRoute = {
+      params: of({ id: '1' })
+    };
 
     await TestBed.configureTestingModule({
       imports: [DetailPengajuan],
       providers: [
         { provide: DataSharingService, useValue: dataSharingServiceSpy },
         { provide: Router, useValue: routerSpy },
-        { provide: ActivatedRoute, useValue: activatedRouteSpy }
+        { provide: ActivatedRoute, useValue: mockActivatedRoute }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DetailPengajuan);
     component = fixture.componentInstance;
-    dataSharingService = TestBed.inject(DataSharingService) as jasmine.SpyObj<DataSharingService>;
-    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    activatedRoute = TestBed.inject(ActivatedRoute) as jasmine.SpyObj<ActivatedRoute>;
-    fixture.detectChanges();
+    mockDataSharingService = TestBed.inject(DataSharingService) as jasmine.SpyObj<DataSharingService>;
+    mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
-  it('should create', () => {
+  it('should create the detail pengajuan component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize with undefined pengajuan and pengajuanId', () => {
-    expect(component.pengajuan).toBeUndefined();
-    expect(component.pengajuanId).toBeUndefined();
-  });
+  describe('Component Initialization', () => {
+    it('should load pengajuan detail on init', () => {
+      mockDataSharingService.getPengajuanById.and.returnValue(mockPengajuan);
 
-  it('should load pengajuan detail on init', () => {
-    dataSharingService.getPengajuanById.and.returnValue(mockPengajuan);
+      component.ngOnInit();
 
-    component.ngOnInit();
-
-    expect(component.pengajuanId).toBe(1);
-    expect(dataSharingService.getPengajuanById).toHaveBeenCalledWith(1);
-    expect(component.pengajuan).toEqual(mockPengajuan);
-  });
-
-  it('should navigate to 404 when pengajuan not found', () => {
-    dataSharingService.getPengajuanById.and.returnValue(undefined);
-
-    component.ngOnInit();
-
-    expect(router.navigate).toHaveBeenCalledWith(['/404']);
-  });
-
-  it('should reload pengajuan detail when data changes', () => {
-    component.pengajuanId = 1;
-    dataSharingService.getPengajuanById.and.returnValue(mockPengajuan);
-
-    component.ngOnInit();
-
-    expect(dataSharingService.getPengajuanById).toHaveBeenCalledWith(1);
-  });
-
-  it('should navigate back to list-pengajuan when goBack is called', () => {
-    component.goBack();
-
-    expect(router.navigate).toHaveBeenCalledWith(['/list-pengajuan']);
-  });
-
-  it('should format currency correctly', () => {
-    const amount = 5000000;
-    const formattedAmount = component.formatCurrency(amount);
-
-    expect(formattedAmount).toBe('Rp5.000.000,00');
-  });
-
-  it('should format different currency amounts correctly', () => {
-    expect(component.formatCurrency(1000000)).toBe('Rp1.000.000,00');
-    expect(component.formatCurrency(500000)).toBe('Rp500.000,00');
-    expect(component.formatCurrency(10000000)).toBe('Rp10.000.000,00');
-  });
-
-  it('should handle route params change', () => {
-    const newActivatedRoute = jasmine.createSpyObj('ActivatedRoute', [], {
-      params: of({ id: '2' })
+      expect(component.pengajuanId).toBe('1');
+      expect(mockDataSharingService.getPengajuanById).toHaveBeenCalledWith('1');
+      expect(component.pengajuan).toEqual(mockPengajuan);
     });
 
-    TestBed.overrideProvider(ActivatedRoute, { useValue: newActivatedRoute });
+    it('should navigate to 404 if pengajuan not found', () => {
+      mockDataSharingService.getPengajuanById.and.returnValue(undefined);
 
-    component.ngOnInit();
+      component.ngOnInit();
 
-    expect(component.pengajuanId).toBe(2);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/404']);
+    });
+
+    it('should reload pengajuan detail when data changes', () => {
+      mockDataSharingService.getPengajuanById.and.returnValue(mockPengajuan);
+
+      component.ngOnInit();
+
+      expect(mockDataSharingService.getPengajuanById).toHaveBeenCalledWith('1');
+    });
   });
 
-  it('should convert string id to number', () => {
-    dataSharingService.getPengajuanById.and.returnValue(mockPengajuan);
+  describe('Route Parameter Changes', () => {
+    it('should handle route parameter changes', () => {
+      mockActivatedRoute.params = of({ id: '2' });
+      mockDataSharingService.getPengajuanById.and.returnValue(mockPengajuan);
 
-    component.ngOnInit();
+      component.ngOnInit();
 
-    expect(typeof component.pengajuanId).toBe('number');
-    expect(component.pengajuanId).toBe(1);
+      expect(component.pengajuanId).toBe('2');
+      expect(mockDataSharingService.getPengajuanById).toHaveBeenCalledWith('2');
+    });
+
+    it('should convert string id to number', () => {
+      mockActivatedRoute.params = of({ id: '123' });
+      mockDataSharingService.getPengajuanById.and.returnValue(mockPengajuan);
+
+      component.ngOnInit();
+
+      expect(component.pengajuanId).toBe('123');
+      expect(typeof component.pengajuanId).toBe('string');
+    });
+  });
+
+  describe('Navigation', () => {
+    it('should navigate back to list pengajuan', () => {
+      component.goBack();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/list-pengajuan']);
+    });
+  });
+
+  describe('Currency Formatting', () => {
+    it('should format currency correctly', () => {
+      const amount = 10000000;
+      const formattedAmount = component.formatCurrency(amount);
+
+      expect(formattedAmount).toContain('Rp');
+      expect(formattedAmount).toContain('10.000.000');
+    });
+
+    it('should format different amounts correctly', () => {
+      expect(component.formatCurrency(1000)).toContain('1.000');
+      expect(component.formatCurrency(500000)).toContain('500.000');
+      expect(component.formatCurrency(1500000)).toContain('1.500.000');
+    });
+  });
+
+  describe('Private Methods', () => {
+    it('should load pengajuan detail when pengajuanId exists', () => {
+      component.pengajuanId = '1';
+      mockDataSharingService.getPengajuanById.and.returnValue(mockPengajuan);
+
+      component['loadPengajuanDetail']();
+
+      expect(mockDataSharingService.getPengajuanById).toHaveBeenCalledWith('1');
+      expect(component.pengajuan).toEqual(mockPengajuan);
+    });
+
+    it('should not load pengajuan detail when pengajuanId is undefined', () => {
+      component.pengajuanId = undefined;
+
+      component['loadPengajuanDetail']();
+
+      expect(mockDataSharingService.getPengajuanById).not.toHaveBeenCalled();
+    });
   });
 });

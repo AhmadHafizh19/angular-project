@@ -12,7 +12,7 @@ import { DataSharingService } from '../../services/data-sharing/data-sharing';
 })
 export class DetailCreditur implements OnInit {
   creditur: creditur | undefined;
-  crediturId: number | undefined;
+  crediturId: string | number | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -22,7 +22,7 @@ export class DetailCreditur implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      this.crediturId = params['id'];
+      this.crediturId = params['id']; // Keep as string, service handles conversion
       this.loadCrediturDetail();
     });
 

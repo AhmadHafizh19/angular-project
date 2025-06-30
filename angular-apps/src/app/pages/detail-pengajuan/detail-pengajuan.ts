@@ -12,7 +12,7 @@ import { DataSharingService } from '../../services/data-sharing/data-sharing';
 })
 export class DetailPengajuan implements OnInit {
   pengajuan: PengajuanPinjaman | undefined;
-  pengajuanId: number | undefined;
+  pengajuanId: string | number | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -22,7 +22,7 @@ export class DetailPengajuan implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      this.pengajuanId = +params['id'];
+      this.pengajuanId = params['id']; // Keep as string, service handles conversion
       this.loadPengajuanDetail();
     });
 

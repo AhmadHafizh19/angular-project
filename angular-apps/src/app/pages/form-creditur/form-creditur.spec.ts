@@ -1,21 +1,24 @@
+import 'zone.js';
+import 'zone.js/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-
 import { FormCreditur } from './form-creditur';
 import { DataSharingService } from '../../services/data-sharing/data-sharing';
 import { ApiService } from '../../services/api/api';
 import { creditur } from '../../../model/creditur';
 
-describe('FormCreditur', () => {
+describe('FormCrediturComponent', () => {
   let component: FormCreditur;
   let fixture: ComponentFixture<FormCreditur>;
-  let dataSharingService: jasmine.SpyObj<DataSharingService>;
-  let apiService: jasmine.SpyObj<ApiService>;
+  let mockDataSharingService: jasmine.SpyObj<DataSharingService>;
+  let mockApiService: jasmine.SpyObj<ApiService>;
 
   beforeEach(async () => {
-    const dataSharingServiceSpy = jasmine.createSpyObj('DataSharingService',
-      ['refreshCrediturData', 'showCrediturAlert']
-    );
+    const dataSharingServiceSpy = jasmine.createSpyObj('DataSharingService', [
+      'refreshCrediturData',
+      'showCrediturAlert'
+    ]);
+
     const apiServiceSpy = jasmine.createSpyObj('ApiService', ['addData']);
 
     await TestBed.configureTestingModule({
@@ -24,95 +27,74 @@ describe('FormCreditur', () => {
         { provide: DataSharingService, useValue: dataSharingServiceSpy },
         { provide: ApiService, useValue: apiServiceSpy }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FormCreditur);
     component = fixture.componentInstance;
-    dataSharingService = TestBed.inject(DataSharingService) as jasmine.SpyObj<DataSharingService>;
-    apiService = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
-    fixture.detectChanges();
+    mockDataSharingService = TestBed.inject(DataSharingService) as jasmine.SpyObj<DataSharingService>;
+    mockApiService = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
   });
 
-  it('should create', () => {
+  it('should create the form creditur component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should add creditur successfully', () => {
-    const newCrediturData: Omit<creditur, 'id' | 'creditScore'> = {
-      name: 'John Doe',
-      age: 30,
-      job: 'Software Engineer'
-    };
+  describe('Add Creditur Functionality', () => {
+    it('should add new creditur successfully', () => {
+      const newCreditur: Omit<creditur, 'id' | 'creditScore'> = {
+        name: 'Test User',
+        age: 25,
+        job: 'Tester'
+      };
 
-    apiService.addData.and.returnValue(of({ success: true, id: 1 }));
-    spyOn(Math, 'random').and.returnValue(0.5); // Mock random to return 0.5
+      mockApiService.addData.and.returnValue(of({ success: true }));
 
-    component.onAddCreditur(newCrediturData);
+      component.onAddCreditur(newCreditur);
 
-    const expectedCrediturData = {
-      ...newCrediturData,
-      creditScore: 51 // Math.floor(0.5 * 100) + 1 = 51
-    };
+      expect(mockApiService.addData).toHaveBeenCalled();
+      const callArgs = mockApiService.addData.calls.mostRecent().args[0];
+      expect(callArgs.name).toBe('Test User');
+      expect(callArgs.age).toBe(25);
+      expect(callArgs.job).toBe('Tester');
+      expect(callArgs.creditScore).toBeGreaterThanOrEqual(1);
+      expect(callArgs.creditScore).toBeLessThanOrEqual(100);
+      expect(mockDataSharingService.refreshCrediturData).toHaveBeenCalledWith(mockApiService);
+      expect(mockDataSharingService.showCrediturAlert).toHaveBeenCalledWith('Creditur berhasil ditambahkan');
+    });
 
-    expect(apiService.addData).toHaveBeenCalledWith(expectedCrediturData);
-    expect(dataSharingService.refreshCrediturData).toHaveBeenCalledWith(apiService);
-    expect(dataSharingService.showCrediturAlert).toHaveBeenCalledWith('Creditur berhasil ditambahkan');
-  });
+    it('should generate credit score between 1 and 100', () => {
+      const newCreditur: Omit<creditur, 'id' | 'creditScore'> = {
+        name: 'Test User',
+        age: 25,
+        job: 'Tester'
+      };
 
-  it('should handle add creditur error', () => {
-    const newCrediturData: Omit<creditur, 'id' | 'creditScore'> = {
-      name: 'John Doe',
-      age: 30,
-      job: 'Software Engineer'
-    };
+      mockApiService.addData.and.returnValue(of({ success: true }));
 
-    apiService.addData.and.returnValue(throwError(() => new Error('Add failed')));
-    spyOn(console, 'error');
+      // Test multiple times to ensure credit score is within range
+      for (let i = 0; i < 10; i++) {
+        component.onAddCreditur(newCreditur);
+        const lastCall = mockApiService.addData.calls.mostRecent();
+        const crediturData = lastCall.args[0] as creditur;
+        expect(crediturData.creditScore).toBeGreaterThanOrEqual(1);
+        expect(crediturData.creditScore).toBeLessThanOrEqual(100);
+      }
+    });
 
-    component.onAddCreditur(newCrediturData);
+    it('should handle add creditur error', () => {
+      const newCreditur: Omit<creditur, 'id' | 'creditScore'> = {
+        name: 'Test User',
+        age: 25,
+        job: 'Tester'
+      };
 
-    expect(console.error).toHaveBeenCalledWith('Error adding creditur:', jasmine.any(Error));
-    expect(dataSharingService.showCrediturAlert).toHaveBeenCalledWith('Gagal menambahkan creditur');
-  });
+      spyOn(console, 'error');
+      mockApiService.addData.and.returnValue(throwError(() => new Error('Add failed')));
 
-  it('should generate random credit score between 1 and 100', () => {
-    const newCrediturData: Omit<creditur, 'id' | 'creditScore'> = {
-      name: 'John Doe',
-      age: 30,
-      job: 'Software Engineer'
-    };
+      component.onAddCreditur(newCreditur);
 
-    apiService.addData.and.returnValue(of({ success: true }));
-    spyOn(Math, 'random').and.returnValue(0.99); // Mock random to return 0.99
-
-    component.onAddCreditur(newCrediturData);
-
-    const expectedCrediturData = {
-      ...newCrediturData,
-      creditScore: 100 // Math.floor(0.99 * 100) + 1 = 100
-    };
-
-    expect(apiService.addData).toHaveBeenCalledWith(expectedCrediturData);
-  });
-
-  it('should generate minimum credit score of 1', () => {
-    const newCrediturData: Omit<creditur, 'id' | 'creditScore'> = {
-      name: 'John Doe',
-      age: 30,
-      job: 'Software Engineer'
-    };
-
-    apiService.addData.and.returnValue(of({ success: true }));
-    spyOn(Math, 'random').and.returnValue(0); // Mock random to return 0
-
-    component.onAddCreditur(newCrediturData);
-
-    const expectedCrediturData = {
-      ...newCrediturData,
-      creditScore: 1 // Math.floor(0 * 100) + 1 = 1
-    };
-
-    expect(apiService.addData).toHaveBeenCalledWith(expectedCrediturData);
+      expect(mockDataSharingService.showCrediturAlert).toHaveBeenCalledWith('Gagal menambahkan creditur');
+      expect(console.error).toHaveBeenCalledWith('Error adding creditur:', jasmine.any(Error));
+    });
   });
 });

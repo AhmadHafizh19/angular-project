@@ -1,27 +1,32 @@
+import 'zone.js';
+import 'zone.js/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-
 import { FormPengajuan } from './form-pengajuan';
 import { DataSharingService } from '../../services/data-sharing/data-sharing';
 import { PengajuanPinjamanService } from '../../services/pengajuan-pinjaman/pengajuan-pinjaman';
 import { creditur } from '../../../model/creditur';
 
-describe('FormPengajuan', () => {
+describe('FormPengajuanComponent', () => {
   let component: FormPengajuan;
   let fixture: ComponentFixture<FormPengajuan>;
-  let dataSharingService: jasmine.SpyObj<DataSharingService>;
-  let pengajuanService: jasmine.SpyObj<PengajuanPinjamanService>;
+  let mockDataSharingService: jasmine.SpyObj<DataSharingService>;
+  let mockPengajuanService: jasmine.SpyObj<PengajuanPinjamanService>;
 
   const mockCrediturData: creditur[] = [
-    { id: 1, name: 'John Doe', age: 30, job: 'Software Engineer', creditScore: 85 },
-    { id: 2, name: 'Jane Smith', age: 25, job: 'Teacher', creditScore: 75 }
+    { id: 1, name: 'John Doe', age: 30, job: 'Developer', creditScore: 75 },
+    { id: 2, name: 'Jane Smith', age: 28, job: 'Designer', creditScore: 82 }
   ];
 
   beforeEach(async () => {
-    const dataSharingServiceSpy = jasmine.createSpyObj('DataSharingService',
-      ['getCrediturData', 'showPengajuanAlert', 'refreshPengajuanData'],
-      { crediturData$: of(mockCrediturData) }
-    );
+    const dataSharingServiceSpy = jasmine.createSpyObj('DataSharingService', [
+      'showPengajuanAlert',
+      'refreshPengajuanData',
+      'getCrediturData'
+    ], {
+      crediturData$: of(mockCrediturData)
+    });
+
     const pengajuanServiceSpy = jasmine.createSpyObj('PengajuanPinjamanService', ['addPengajuan']);
 
     await TestBed.configureTestingModule({
@@ -30,105 +35,90 @@ describe('FormPengajuan', () => {
         { provide: DataSharingService, useValue: dataSharingServiceSpy },
         { provide: PengajuanPinjamanService, useValue: pengajuanServiceSpy }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FormPengajuan);
     component = fixture.componentInstance;
-    dataSharingService = TestBed.inject(DataSharingService) as jasmine.SpyObj<DataSharingService>;
-    pengajuanService = TestBed.inject(PengajuanPinjamanService) as jasmine.SpyObj<PengajuanPinjamanService>;
-    fixture.detectChanges();
+    mockDataSharingService = TestBed.inject(DataSharingService) as jasmine.SpyObj<DataSharingService>;
+    mockPengajuanService = TestBed.inject(PengajuanPinjamanService) as jasmine.SpyObj<PengajuanPinjamanService>;
   });
 
-  it('should create', () => {
+  it('should create the form pengajuan component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize with empty creditur list', () => {
-    expect(component.crediturList).toEqual([]);
-  });
-
-  it('should subscribe to creditur data on init', () => {
+  it('should initialize creditur list from service on init', () => {
     component.ngOnInit();
     expect(component.crediturList).toEqual(mockCrediturData);
   });
 
-  it('should submit pengajuan successfully', () => {
-    const pengajuanData = {
-      nama: 'John Doe',
-      jumlahPinjaman: 5000000,
-      tenor: 12
-    };
+  describe('Submit Pengajuan Functionality', () => {
+    it('should submit pengajuan successfully', () => {
+      const pengajuanData = {
+        nama: 'John Doe',
+        jumlahPinjaman: 10000000,
+        tenor: 12
+      };
 
-    const mockResult = {
-      success: true,
-      message: 'Pengajuan berhasil disubmit'
-    };
+      const mockResult = {
+        success: true,
+        message: 'Pengajuan berhasil'
+      };
 
-    dataSharingService.getCrediturData.and.returnValue(mockCrediturData);
-    pengajuanService.addPengajuan.and.returnValue(mockResult);
+      mockPengajuanService.addPengajuan.and.returnValue(mockResult);
+      mockDataSharingService.getCrediturData.and.returnValue(mockCrediturData);
 
-    component.onSubmitPengajuan(pengajuanData);
+      component.onSubmitPengajuan(pengajuanData);
 
-    expect(pengajuanService.addPengajuan).toHaveBeenCalledWith(
-      'John Doe',
-      5000000,
-      12,
-      mockCrediturData
-    );
-    expect(dataSharingService.showPengajuanAlert).toHaveBeenCalledWith(
-      'Pengajuan berhasil disubmit',
-      true
-    );
-    expect(dataSharingService.refreshPengajuanData).toHaveBeenCalledWith(pengajuanService);
-  });
+      expect(mockPengajuanService.addPengajuan).toHaveBeenCalledWith(
+        pengajuanData.nama,
+        pengajuanData.jumlahPinjaman,
+        pengajuanData.tenor,
+        mockCrediturData
+      );
+      expect(mockDataSharingService.showPengajuanAlert).toHaveBeenCalledWith(mockResult.message, mockResult.success);
+      expect(mockDataSharingService.refreshPengajuanData).toHaveBeenCalledWith(mockPengajuanService);
+    });
 
-  it('should handle pengajuan submission failure', () => {
-    const pengajuanData = {
-      nama: 'John Doe',
-      jumlahPinjaman: 5000000,
-      tenor: 12
-    };
+    it('should handle pengajuan rejection', () => {
+      const pengajuanData = {
+        nama: 'Jane Smith',
+        jumlahPinjaman: 50000000,
+        tenor: 24
+      };
 
-    const mockResult = {
-      success: false,
-      message: 'Pengajuan gagal disubmit'
-    };
+      const mockResult = {
+        success: false,
+        message: 'Pengajuan ditolak karena credit score rendah'
+      };
 
-    dataSharingService.getCrediturData.and.returnValue(mockCrediturData);
-    pengajuanService.addPengajuan.and.returnValue(mockResult);
+      mockPengajuanService.addPengajuan.and.returnValue(mockResult);
+      mockDataSharingService.getCrediturData.and.returnValue(mockCrediturData);
 
-    component.onSubmitPengajuan(pengajuanData);
+      component.onSubmitPengajuan(pengajuanData);
 
-    expect(dataSharingService.showPengajuanAlert).toHaveBeenCalledWith(
-      'Pengajuan gagal disubmit',
-      false
-    );
-    expect(dataSharingService.refreshPengajuanData).toHaveBeenCalledWith(pengajuanService);
-  });
+      expect(mockDataSharingService.showPengajuanAlert).toHaveBeenCalledWith(mockResult.message, mockResult.success);
+      expect(mockDataSharingService.refreshPengajuanData).toHaveBeenCalledWith(mockPengajuanService);
+    });
 
-  it('should handle different pengajuan data formats', () => {
-    const pengajuanData = {
-      nama: 'Jane Smith',
-      jumlahPinjaman: 10000000,
-      tenor: 24
-    };
+    it('should pass correct parameters to addPengajuan service', () => {
+      const pengajuanData = {
+        nama: 'Test User',
+        jumlahPinjaman: 5000000,
+        tenor: 6
+      };
 
-    const mockResult = {
-      success: true,
-      message: 'Pengajuan berhasil'
-    };
+      mockPengajuanService.addPengajuan.and.returnValue({ success: true, message: 'Success' });
+      mockDataSharingService.getCrediturData.and.returnValue(mockCrediturData);
 
-    dataSharingService.getCrediturData.and.returnValue(mockCrediturData);
-    pengajuanService.addPengajuan.and.returnValue(mockResult);
+      component.onSubmitPengajuan(pengajuanData);
 
-    component.onSubmitPengajuan(pengajuanData);
-
-    expect(pengajuanService.addPengajuan).toHaveBeenCalledWith(
-      'Jane Smith',
-      10000000,
-      24,
-      mockCrediturData
-    );
+      expect(mockPengajuanService.addPengajuan).toHaveBeenCalledWith(
+        'Test User',
+        5000000,
+        6,
+        mockCrediturData
+      );
+    });
   });
 });
